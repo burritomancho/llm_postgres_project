@@ -1,5 +1,5 @@
 from langchain_openai import ChatOpenAI
-from langchain_core.runnables import RunnablePassthrough
+# from langchain_core.runnables import RunnablePassthrough
 from langchain_core.prompts import ChatPromptTemplate
 from postgres import store_product_in_db, search_similar_chunks
 from prompt import Prompt
