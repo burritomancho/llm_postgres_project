@@ -1,0 +1,31 @@
+services:
+  app:
+    build:
+      context: ./llmpostgres
+      dockerfile: Dockerfile
+    container_name: llm_postgres
+    ports:
+      - "8501:8501"
+    depends_on:
+      - db
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DATABASE_URL=postgresql://pdf_user:pdf_pw@db:5432/pdfdata
+    # volumes:
+    #   - ./pdfllm:/app
+
+  db:
+    image: ankane/pgvector:latest
+    container_name: pdf_llm_postgres
+    environment:
+      POSTGRES_USER: pdf_user
+      POSTGRES_PASSWORD: pdf_pw
+      POSTGRES_DB: pdfdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init_pgvector.sql:/docker-entrypoint-initdb.d/init_pgvector.sql
+
+volumes:
+  pgdata:
