@@ -1,0 +1,46 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+myenv/
+.env
+.env.*
+
+# Streamlit artifacts
+.streamlit/
+*.streamlit-*
+
+# Chroma vectorstore
+db/
+vectorstore_chroma/
+vectordatabase/
+
+# Logs and temp files
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Test cache
+.cache/
+pytest_cache/
+coverage/
+
+# Misc
+*.pdf
