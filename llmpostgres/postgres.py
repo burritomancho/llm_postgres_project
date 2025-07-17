@@ -86,13 +86,12 @@ def search_similar_chunks(question, api_key=None, top_k=5):
     q_embed = embeddings_model.embed_query(question)
 
     cur.execute(
-        f"""
-        SELECT content
-        FROM product_chunks
-        ORDER BY embedding <-> %s
-        LIMIT {top_k};
+        """
+        SELECT content FROM product_chunks
+        ORDER BY embedding <-> %s::vector
+        LIMIT %s;
         """,
-        (q_embed,),
+        (q_embed, top_k),
     )
 
     results = [row[0] for row in cur.fetchall()]
