@@ -3,6 +3,33 @@ from langchain_openai import OpenAIEmbeddings
 import psycopg2
 import os
 
+
+def init_db_schema():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS products (
+            id SERIAL PRIMARY KEY,
+            title TEXT NOT NULL,
+            source TEXT
+        );
+    """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS product_chunks (
+            id SERIAL PRIMARY KEY,
+            product_id INT REFERENCES products(id) ON DELETE CASCADE,
+            content TEXT,
+            embedding TEXT
+        );
+    """)
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
 def get_db_connection():
     database_url = os.environ.get("DATABASE_URL")
     if not database_url:

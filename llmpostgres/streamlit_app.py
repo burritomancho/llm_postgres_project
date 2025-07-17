@@ -1,12 +1,15 @@
 from rag import query_document
 from document_utils import get_text_from_input
 from dotenv import load_dotenv
+from postgres import init_db_schema
 
 import os
 import streamlit as st
 
 load_dotenv()
 key = os.environ['OPENAI_API_KEY']
+
+init_db_schema()
 
 
 st.title("PDF Q&A App (LangChain + OpenAI)")
