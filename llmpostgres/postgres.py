@@ -4,14 +4,10 @@ import psycopg2
 import os
 
 def get_db_connection():
-    return psycopg2.connect(
-        dbname=os.environ.get("POSTGRES_DB", "pdfdata"),
-        user=os.environ.get("POSTGRES_USER", "pdf_user"),
-        password=os.environ.get("POSTGRES_PASSWORD", "pdf_pw"),
-        host=os.environ.get("POSTGRES_HOST", "db"),
-        port=os.environ.get("POSTGRES_PORT", "5432"),
-    )
-
+    database_url = os.environ.get("DATABASE_URL")
+    if not database_url:
+        raise RuntimeError("DATABASE_URL is not set. Did you link the database in Render?")
+    return psycopg2.connect(database_url)
 
 def get_embedding_function(api_key=None):
     return OpenAIEmbeddings(model="text-embedding-ada-002", api_key=api_key)
