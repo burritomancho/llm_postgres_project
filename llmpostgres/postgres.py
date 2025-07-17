@@ -53,4 +53,44 @@ def get_embedding_function(api_key=None):
 def store_product_in_db(product_title, product_text, api_key=None):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.e
+    cur.execute(
+        "INSERT INTO products (title, source) VALUES (%s, %s) RETURNING id;",
+        (product_title, "user_input"),
+    )
+    product_id = cur.fetchone()[0]
+
+    splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=100)
+    chunks = splitter.split_text(product_text)
+
+    embeddings_model = get_embedding_function(api_key)
+    for chunk in chunks:
+        embedding = embeddings_model.embed_query(chunk)
+        cur.execute(
+            """
+            INSERT INTO product_chunks (product_id, content, embedding)
+            VALUES (%s, %s, %s)
+            """,
+            (product_id, chunk, embedding),
+        )
+    conn.commit()
+    cur.close()
+    conn.close()
+    return product_id
+
+def search_similar_chunks(question, api_key=None, top_k=5):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    embeddings_model = get_embedding_function(api_key)
+    q_embed = embeddings_model.embed_query(question)
+    cur.execute(
+        f"""
+        SELECT content FROM product_chunks
+        ORDER BY embedding <-> %s
+        LIMIT {top_k};
+        """,
+        (q_embed,),
+    )
+    results = [row[0] for row in cur.fetchall()]
+    cur.close()
+    conn.close()
+    return results
